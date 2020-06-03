@@ -55,9 +55,10 @@ class JobController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/show", 
+     * @Route("/{company}/{location}/{id}/{position}", 
      *         name="job_show", 
-     *         methods={"GET"}
+     *         methods={"GET"},
+     *         requirements={"id"="\d+"}
      *  )
      */
     public function show($id, JobRepository $jobRepository): Response

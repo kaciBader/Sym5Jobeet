@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\JobRepository;
+use App\Utils\Jobeet as Jobeet;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -317,5 +318,41 @@ class Job
     public function setUpdatedAtValue()
     {
       $this->updated_at = new \DateTime();
+    }
+
+    /**
+    * Slugify company attribute
+    *
+    * @return string 
+    */
+    public function getCompanySlug()
+    {
+        return Jobeet::slugify($this->getCompany());
+    }
+ 
+ /*
+    public function getAttributeSlug($att)
+    {
+        if()
+    } */
+    // penser a factoriser ces trois fonction en une seule 
+    /**
+    * Slugify position attribute
+    *
+    * @return string
+    */
+    public function getPositionSlug()
+    {
+        return Jobeet::slugify($this->getPosition());
+    }
+ 
+    /**
+    * Slugify location attribute
+    *
+    * @return string 
+    */
+    public function getLocationSlug()
+    {
+        return Jobeet::slugify($this->getLocation());
     }
 }

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Job;
 use App\Form\JobType;
 use App\Repository\JobRepository;
+use App\Repository\CategoryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,11 +22,17 @@ class JobController extends AbstractController
      *        methods={"GET"}
      *  )
      */
-    public function index(JobRepository $jobRepository): Response
+    public function index(JobRepository $jobRepository, CategoryRepository $categoryRepository): Response
     {
+     
+        $categories = $categoryRepository->getWithJobs();
+        foreach($categories as $category)
+        {
+            $category->setActiveJobs($jobRepository->getActiveJobs($category->getId(), $this->getParameter('max_jobs_on_homepage')));
+        }
         return $this->render('job/index.html.twig', [
-            'jobs' => $jobRepository->findAll(),
-        ]);
+        'categories' => $categories]);
+        
     }
 
     /**
@@ -63,7 +70,7 @@ class JobController extends AbstractController
      */
     public function show($id, JobRepository $jobRepository): Response
     {
-        $job  =  $jobRepository->find($id);
+        $job  =  $jobRepository->getActiveJob($id);
         if (!$job) {
         throw $this->createNotFoundException('Unable to find Job entity.');
         }

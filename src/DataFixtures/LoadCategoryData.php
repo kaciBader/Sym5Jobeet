@@ -30,9 +30,9 @@ class LoadCategoryData extends Fixture
 	 
 	    $manager->flush();
 	 
-	    $this->addReference('category-design', $design);
-	    $this->addReference('category-programming', $programming);
-	    $this->addReference('category-manager', $manager);
-	    $this->addReference('category-administrator', $administrator);
+	    $this->addReference("category-design", $design);
+	    $this->addReference("category-programming", $programming);
+	    $this->addReference("category-manager", $manager);
+	    $this->addReference("category-administrator", $administrator);
     }
 }

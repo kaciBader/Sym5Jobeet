@@ -47,4 +47,18 @@ class CategoryRepository extends ServiceEntityRepository
         ;
     }
     */
+    public function getWithJobs()
+    {
+        $qb  = $this->createQueryBuilder('c')
+                    ->select('c')
+                    ->leftJoin('c.jobs','j')
+                    ->where('j.expires_at > :date')
+                    ->setParameter('date', date('Y-m-d H:i:s', time())); 
+        $query  =  $qb->getQuery();
+        return $query->getResult();
+
+      
+ 
+    //return $query->getResult();
+    }
 }

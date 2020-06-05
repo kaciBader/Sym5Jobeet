@@ -38,6 +38,8 @@ class Category
      */
     private $category_affiliates;
 
+    private $active_jobs;
+
     /**
     * Initializes a new Category.
     */
@@ -122,6 +124,18 @@ class Category
                 $categoryAffiliate->setCategory(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getActiveJobs()
+    {
+        return $this->active_jobs;
+    }
+
+    public function setActiveJobs($active_jobs): self
+    {
+        $this->active_jobs = $active_jobs;
 
         return $this;
     }

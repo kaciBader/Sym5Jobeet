@@ -47,4 +47,47 @@ class JobRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    /**
+    * @param int category_id
+    *
+    * @return Job[] Returns an array of Job objects
+    */
+    public function getActiveJobs($category_id = null, $max_jobs = null)
+    {
+        $qb = $this->createQueryBuilder('j')
+                   -> where('j.expires_at > :date')
+                   ->setParameter('date', date('Y-m-d H:i:s', time()))
+                   ->orderBy('j.expires_at','DESC');
+        if($max_jobs)
+            $qb->setMaxResults($max_jobs);
+
+        if($category_id)
+        {
+            $qb->andWhere('j.category =:category_id')
+               ->setParameter('category_id',$category_id);
+        }
+        $query  = $qb->getQuery();
+        $result  = $query->getResult();
+        return $result ;
+    }
+
+    public function getActiveJob($id)
+    {
+          $query = $this->createQueryBuilder('j')
+            ->where('j.id = :id')
+            ->setParameter('id', $id)
+            ->andWhere('j.expires_at > :date')
+            ->setParameter('date', date('Y-m-d H:i:s', time()))
+            ->setMaxResults(1)
+            ->getQuery();
+         
+          try {
+            $job = $query->getSingleResult();
+          } catch (\Doctrine\Orm\NoResultException $e) {
+            $job = null;
+          }
+         
+          return $job;
+    }
 }

@@ -29,6 +29,7 @@ class JobController extends AbstractController
         foreach($categories as $category)
         {
             $category->setActiveJobs($jobRepository->getActiveJobs($category->getId(), $this->getParameter('max_jobs_on_homepage')));
+            $category->setMoreJobs($jobRepository->countActiveJobs($category->getId()) - $this->getParameter('max_jobs_on_homepage'));
         }
         return $this->render('job/index.html.twig', [
         'categories' => $categories]);

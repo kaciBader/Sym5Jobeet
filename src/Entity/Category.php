@@ -7,10 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use App\Utils\Jobeet ;
 
 /**
  * @ORM\Entity(repositoryClass=CategoryRepository::class)
  * @ORM\Table(name ="category")
+ * @ORM\HasLifecycleCallbacks
  */
 class Category
 {
@@ -39,6 +41,12 @@ class Category
     private $category_affiliates;
 
     private $active_jobs;
+
+    /**
+    * @ORM\Column(type="string", length=255,nullable=true)
+    */
+    private $slug ; 
+    private $more_jobs ;
 
     /**
     * Initializes a new Category.
@@ -139,4 +147,55 @@ class Category
 
         return $this;
     }
+
+    /**
+    * get slug
+    *
+    * @return string
+    */
+    public function getSlug()
+    {
+        return Jobeet::slugify($this->getName());
+    }
+    /**
+    * Set slug
+    *
+    * @param string $slug
+    */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+    }
+
+    /**
+    * set more_jobs
+    *
+    * @param integer $jobs
+    *
+    * @return integer
+    */
+    public function setMoreJobs($jobs)
+    {
+        $this->more_jobs = $jobs >=  0 ? $jobs : 0;
+    }
+
+    /**
+    * get more_jobs
+    *
+    * @return integer
+    */
+    public function getMoreJobs()
+    {
+        return $this->more_jobs;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setSlugValue()
+    {
+        $this->slug = Jobeet::slugify($this->getName());
+    } 
+    
 }

@@ -1,0 +1,23 @@
+{#templates/category/show.html.twig #}
+ 
+{% extends 'layout.html.twig' %}
+ 
+{% block title %}
+  Jobs in the {{ category.name }} category
+{% endblock %}
+ 
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="{{ asset('vendor/css/jobs.css') }}" type="text/css" media="all" />
+{% endblock %}
+ 
+{% block content %}
+  <div class="category">
+    <div class="feed">
+      <a href="">Feed</a>
+    </div>
+    <h1>{{ category.name }}</h1>
+  </div>
+ 
+  {% include 'job/_list.html.twig' with {'jobs': category.activejobs} %}
+{% endblock %}

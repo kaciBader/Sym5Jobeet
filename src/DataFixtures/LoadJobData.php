@@ -29,7 +29,7 @@ class LoadJobData extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager)
     {
 	    $faker = Faker\Factory::create();
-	    for($i =0 ; $i< 10; $i++) 
+	    for($i =0 ; $i< 50; $i++) 
         {
         	$job = new Job();
         	//$x  = rand(0,2);

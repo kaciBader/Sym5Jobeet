@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @Route("/job")
@@ -22,17 +23,26 @@ class JobController extends AbstractController
      *        methods={"GET"}
      *  )
      */
-    public function index(JobRepository $jobRepository, CategoryRepository $categoryRepository): Response
+    public function index(JobRepository $jobRepository, CategoryRepository $categoryRepository, PaginatorInterface $paginator, Request $request): Response
     {
      
         $categories = $categoryRepository->getWithJobs();
         foreach($categories as $category)
         {
-            $category->setActiveJobs($jobRepository->getActiveJobs($category->getId(), $this->getParameter('max_jobs_on_homepage')));
-            $category->setMoreJobs($jobRepository->countActiveJobs($category->getId()) - $this->getParameter('max_jobs_on_homepage'));
+            /* $category->setActiveJobs($jobRepository->getActiveJobs($category->getId(), $this->getParameter('max_jobs_on_homepage'))); */
+
+            $query = $jobRepository->getActiveJobsQuery($category->getId());
+            $pagination = $paginator->paginate(
+            $query, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            10 /*limit per page*/
+        );
+
+            $category->setMoreJobs($jobRepository->countActiveJobs($category->getId()),$this->getParameter('max_jobs_on_homepage'));
         }
         return $this->render('job/index.html.twig', [
-        'categories' => $categories]);
+        'categories' => $categories,
+        'pagination' => $pagination]);
         
     }
 

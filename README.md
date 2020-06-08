@@ -14,3 +14,7 @@ Sym5Jobeet est une application symfony, developpée en suivant le tutorial origi
 
 * utilisation de faker library de generate the data fixtures 
 
+* pagination en utilisant knplabs/knp-paginator-bundle
+   -- pagination des jobs a l'interieur de chaque category 
+  
+

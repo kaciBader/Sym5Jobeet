@@ -19,7 +19,8 @@
           </div>
           <h1><a href = "{{path('category_show', {'slug':category.getSlug()})}}">{{ category.name }} </a></h1>
         </div>
-        {% include 'job/_list.html.twig' with {'jobs': category.activejobs} %}
+         {% include 'job/_list.html.twig' with {'jobs': category.activejobs} %}  
+
         {% if category.morejobs %}
             <div class="more_jobs">
               and <a href="{{ path('category_show', { 'slug': category.slug() }) }}">{{ category.morejobs }}</a>

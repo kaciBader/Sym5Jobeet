@@ -35,7 +35,7 @@ class LoadJobData extends Fixture implements DependentFixtureInterface
         	//$x  = rand(0,2);
         	//var_dump($x);
         	$ref  = self::getCategoryRandomly($i%2);
- //var_dump($ref);
+ 			//var_dump($ref);
 	        $job->setCategory($this->getReference($ref));
 	       
 			$job->setType('full-time');  // penser a faire une fonction qui expose les types de données full-time, half-time, 
@@ -57,6 +57,8 @@ class LoadJobData extends Fixture implements DependentFixtureInterface
 		    $manager->persist($job);
 		    
 	    }
+
+	    // add an expired job 
 	    $manager->flush();
     }
 

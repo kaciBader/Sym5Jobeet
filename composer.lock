@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7b33a8bc716481e01e3cd5c362e0d812",
+    "content-hash": "2c90fefcdc5c24a4de55f2abe89a0f0e",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -4654,7 +4654,7 @@
         },
         {
             "name": "symfony/validator",
-            "version": "v5.0.9",
+            "version": "v5.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/validator.git",

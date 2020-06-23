@@ -197,5 +197,10 @@ class Category
     {
         $this->slug = Jobeet::slugify($this->getName());
     } 
-    
+
+    public function __toString()
+    {
+      return $this->getName();
+    }
+        
 }

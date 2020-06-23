@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Doctrine\Persistence\ObjectManager;
 
 /**
  * @Route("/job")
@@ -59,11 +61,24 @@ class JobController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($job);
-            $entityManager->flush();
+            $manager = $this->getDoctrine()->getManager();//to do with injection
+            //$job->file->move(__DIR__.'/../../../../public/vendor/uploads/jobs', $job->file->getClientOriginalName());
 
-            return $this->redirectToRoute('job_index');
+           
+
+            //$job->setLogo($job->file->getClientOriginalName());
+            $job->setExpiresAt(new \DateTime('2021-11-10'));
+
+           $manager->persist($job);
+            $manager->flush();
+
+        return $this->redirect($this->generateUrl('job_show', [
+                'company' => $job->getCompanySlug(),
+                'location' => $job->getLocationSlug(),
+                'id' => $job->getId(),
+                'position' => $job->getPositionSlug()
+        ],UrlGeneratorInterface::ABSOLUTE_URL));
+
         }
 
         return $this->render('job/new.html.twig', [

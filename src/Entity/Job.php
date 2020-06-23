@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\JobRepository;
 use App\Utils\Jobeet as Jobeet;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=JobRepository::class)
@@ -22,13 +23,19 @@ class Job
      */
     private $id;
 
+//  Assert\Choice(callback="getTypeValues")
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     *
+     * @Assert\NotBlank
+     *
      */
     private $type;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @Assert\NotBlank
      */
     private $company;
 
@@ -44,21 +51,29 @@ class Job
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @Assert\NotBlank
      */
     private $position;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @Assert\NotBlank
      */
     private $location;
 
     /**
      * @ORM\Column(type="text")
+     *
+     * @Assert\NotBlank
      */
     private $description;
 
     /**
      * @ORM\Column(type="text")
+     *
+     * @Assert\NotBlank
      */
     private $how_to_apply;
 
@@ -79,6 +94,12 @@ class Job
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @Assert\NotBlank
+     *
+     * @Assert\Email(
+     *   message = "The email '{{ value }}' is not a valid email."
+     * )
      */
     private $email;
 
@@ -102,8 +123,15 @@ class Job
      * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="jobs")
      *
      *@ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     *
+     * @Assert\NotBlank
      */
     private $category;
+
+    /**
+    * @Assert\Image
+    */
+    public $file; // used to upload files 
 
     public function getId(): ?int
     {
@@ -354,5 +382,74 @@ class Job
     public function getLocationSlug()
     {
         return Jobeet::slugify($this->getLocation());
+    }
+
+    public static function getTypes()
+    {
+        return array('full-time' => 'Full time', 'part-time' => 'Part time', 'freelance' => 'Freelance');
+    }
+
+    public static function getTypeValues()
+    {
+      return array_keys(self::getTypes());
+    }
+
+    protected function getUploadDir()
+    {
+        return 'uploads/jobs';
+    }
+ 
+    protected function getUploadRootDir()
+    {
+        return __DIR__.'/../../../../public/vendor'.$this->getUploadDir();
+    }
+ 
+    public function getWebPath()
+    {
+        return null === $this->logo ? null : $this->getUploadDir().'/'.$this->logo;
+    }
+ 
+    public function getAbsolutePath()
+    {
+        return null === $this->logo ? null : $this->getUploadRootDir().'/'.$this->logo;
+    }
+
+
+    /**
+     * @ORM\prePersist
+     */
+    public function preUpload()
+    {
+        if (null !== $this->file) {
+            // do whatever you want to generate a unique name
+            $this->logo = uniqid().'.'.$this->file->guessExtension();
+        }
+    }
+
+    /**
+    * @ORM\PostPersist
+    */
+    public function upload()
+    {
+        if (null === $this->file) {
+            return;
+        }
+     
+          // if there is an error when moving the file, an exception will
+          // be automatically thrown by move(). This will properly prevent
+          // the entity from being persisted to the database on error
+          $this->file->move($this->getUploadRootDir(), $this->logo);
+         
+          unset($this->file);
+    }
+ 
+    /**
+    * @ORM\PostRemove
+    */
+    public function removeUpload()
+    {
+        if ($file = $this->getAbsolutePath()) {
+            unlink($file);
+        }
     }
 }

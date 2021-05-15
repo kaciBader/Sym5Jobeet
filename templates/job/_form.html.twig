@@ -1,7 +1,7 @@
 
 {# render the start tag and change the submission method #}
-{{ form_start(form, {'method': 'GET','action':"path('job_create')"}) }}
-
+{#{{ form_start(form, {'method': 'GET','action':"path('job_create')"}) }} #}
+{{ form_start(form) }}
     <table id="job_form">
       <tfoot>
         <tr>
@@ -74,13 +74,7 @@
             {{ form_widget(form.how_to_apply) }}
           </td>
         </tr>
-        <tr>
-          <th>{{ form_label(form.token) }}</th>
-          <td>
-            {{ form_errors(form.token) }}
-            {{ form_widget(form.token) }}
-          </td>
-        </tr>
+        
         <tr>
           <th>{{ form_label(form.is_public) }}</th>
           <td>

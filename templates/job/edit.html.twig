@@ -1,13 +1,29 @@
-{% extends 'base.html.twig' %}
+{% extends 'layout.html.twig' %}
 
-{% block title %}Edit Job{% endblock %}
+{% block title %} New Job {% endblock %}
 
-{% block body %}
-    <h1>Edit Job</h1>
-
-    {{ include('job/_form.html.twig', {'button_label': 'Update'}) }}
+{% form_theme form _self %}
+ 
+{% block field_errors %}
+{#{% spaceless %} #}
+  {% if errors|length > 0 %}
+    <ul class="error_list">
+      {% for error in errors %}
+        <li>{{ error.messageTemplate|trans(error.messageParameters, 'validators') }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{#{% endspaceless %}#}
+{% endblock field_errors %}
+ 
+{% block stylesheets %}
+	  {{ parent() }}
+	  <link rel="stylesheet" href="{{ asset('vendor/css/job.css') }}" type="text/css" media="all" />
+{% endblock %}
+ 
+{% block content %}
+  	<h1>Job creation</h1>
+    {{ include('job/_form.html.twig') }}
 
     <a href="{{ path('job_index') }}">back to list</a>
-
-    {{ include('job/_delete_form.html.twig') }}
 {% endblock %}

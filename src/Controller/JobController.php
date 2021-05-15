@@ -72,10 +72,10 @@ class JobController extends AbstractController
            $manager->persist($job);
             $manager->flush();
 
-        return $this->redirect($this->generateUrl('job_show', [
+        return $this->redirect($this->generateUrl('job_preview', [
                 'company' => $job->getCompanySlug(),
                 'location' => $job->getLocationSlug(),
-                'id' => $job->getId(),
+                'token' => $job->getToken(),
                 'position' => $job->getPositionSlug()
         ],UrlGeneratorInterface::ABSOLUTE_URL));
 
@@ -102,7 +102,7 @@ class JobController extends AbstractController
         }
         // $deleteForm = $this->createDeleteForm($id);
         return $this->render('job/show.html.twig', [
-            'job' => $job,
+            'job' => $job
         ]);
     }
 
@@ -114,42 +114,109 @@ class JobController extends AbstractController
     }*/
 
     /**
-     * @Route("/{id}/edit", 
+     * @Route("/{token}/edit", 
      *          name="job_edit", 
      *          methods={"GET","POST"}
      *  )
      */
-    public function edit(Request $request, Job $job): Response
+    public function edit(Request $request, $token,JobRepository $jobRepository): Response
     {
+
+        $job  =  $jobRepository->findOneByToken($token);
+        if (!$job) {
+            throw $this->createNotFoundException('Unable to find Job entity.');
+        }
+
         $form = $this->createForm(JobType::class, $job);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('job_index');
+
+
+            return $this->redirect($this->generateUrl('job_show', [
+                'company' => $job->getCompanySlug(),
+                'location' => $job->getLocationSlug(),
+                'id' => $job->getId(),
+                'position' => $job->getPositionSlug()
+        ],UrlGeneratorInterface::ABSOLUTE_URL));
+
+
+           // return $this->redirectToRoute('job_index');
         }
 
         return $this->render('job/edit.html.twig', [
-            'job' => $job,
+            'token' => $job->getToken(),
             'form' => $form->createView(),
         ]);
     }
 
     /**
-     * @Route("/{id}", 
+     * @Route("/{token}/delete", 
      *          name="job_delete", 
-     *          methods={"DELETE"}
+     *          methods={"POST"}
      *  )
      */
-    public function delete(Request $request, Job $job): Response
+    public function delete(Request $request, $token): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$job->getId(), $request->request->get('_token'))) {
+        $form = $this->createDeleteForm($token);
+        $form->handleRequest($request);
+
+    if ($form->isValid()) {
+        $em = $this->getDoctrine()->getManager();
+        $job = $em->getRepository(Job::class)->findOneByToken($token);
+     
+        if (!$job) {
+          throw $this->createNotFoundException('Unable to find Job entity.');
+        }
+     
+        $em->remove($job);
+        $em->flush();
+      }
+ 
+  return $this->redirect($this->generateUrl('job_index'));
+
+
+        /*if ($this->isCsrfTokenValid('delete'.$job->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($job);
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('job_index');
+        return $this->redirectToRoute('job_index');*/
+    }
+
+    /**
+     * @Route("/{company}/{location}/{token}/{position}", 
+     *         name="job_preview", 
+     *         methods={"GET"},
+     *         requirements={"token":"\w+"}
+     *  )
+     */
+    public function previewAction($token)
+    {
+        $em = $this->getDoctrine()->getManager();
+    
+        $job = $em->getRepository(Job::class)->findOneByToken($token);
+    
+        if (!$job) {
+            throw $this->createNotFoundException('Unable to find Job entity.');
+        }
+    
+        $deleteForm = $this->createDeleteForm($job->getToken());
+    
+        return $this->render('job/show.html.twig', array(
+            'job'      => $job,
+            'delete_form' =>$deleteForm->createView()
+        ));
+    }
+
+    private function createDeleteForm($token)
+    {
+      return $this->createFormBuilder(array('token' => $token))
+        ->add('token')
+        ->getForm()
+      ;
     }
 }

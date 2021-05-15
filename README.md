@@ -29,7 +29,20 @@ Via Composer executer la commande suivante
 Composer install
 ``` 
 
-3. Tests
+3. Configuration de la base de données 
+* Dans le dossier var creez un fichier Sym5Jobeet_dev.db
+* dans le fichier .env configurez votre base de données 
+```
+DATABASE_URL=sqlite:///%kernel.project_dir%/var/Sym5Jobeet_dev.db
+```
+* utilisez la commande ci-aprés pour creer votre base de données 
+```
+symfony console doctrine:database:create
+```
+* Créez les tables correspondantes au schéma Doctrine :
+
+
+4. Tests
 executez les commande suivante pour lancer les tests
 ```
 cd Sym5Jobeet/
